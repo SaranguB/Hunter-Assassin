@@ -85,13 +85,4 @@ namespace StatePattern.Enemy
         ACTIVE,
         DEACTIVE
     }
-
-    public enum States
-    {
-        IDLE,
-        ROTATING,
-        SHOOTING,
-        PATROLING,
-        CHASING,
-    }
 }

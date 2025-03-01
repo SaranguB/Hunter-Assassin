@@ -6,4 +6,12 @@ namespace StatePattern.StateMachine
     {
         public void ChangeState(States newState);
     }
+    public enum States
+    {
+        IDLE,
+        ROTATING,
+        SHOOTING,
+        PATROLLING,
+        CHASING
+    }
 }

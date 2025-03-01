@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StatePattern.Enemy
 {
-    public class OnePunchManStateMachine : IStateMachine
+    public class OnePunchManStateMachine : GenericStateMachine
     {
         private OnePunchManController Owner;
         private IState currentState;

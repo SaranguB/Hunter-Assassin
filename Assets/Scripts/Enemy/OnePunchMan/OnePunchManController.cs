@@ -2,78 +2,31 @@ using UnityEngine;
 using StatePattern.Enemy.Bullet;
 using StatePattern.Main;
 using StatePattern.Player;
+using System;
 
 namespace StatePattern.Enemy
 {
     public class OnePunchManController : EnemyController
     {
-        private bool isIdle;
-        private bool isRotating;
-        private bool isShooting;
-        private float idleTimer;
-        private float shootTimer;
-        private float targetRotation;
-        private PlayerController target;
 
+        private OnePunchManStateMachine stateMachine;
 
         public OnePunchManController(EnemyScriptableObject enemyScriptableObject) : base(enemyScriptableObject)
         {
             enemyView.SetController(this);
-            InitializeVariables();
+            CreateStateMachine();
+            stateMachine.ChangeState(OnePunchManStates.IDLE);
         }
 
-        private void InitializeVariables()
-        {
-            isIdle = true;
-            isRotating = false;
-            isShooting = false;
-            idleTimer = enemyScriptableObject.IdleTime;
-            shootTimer = enemyScriptableObject.RateOfFire;
-        }
+        private void CreateStateMachine() => stateMachine = new OnePunchManStateMachine(this);
+     
 
         public override void UpdateEnemy()
         {
             if (currentState == EnemyState.DEACTIVE)
                 return;
 
-            if(isIdle && !isRotating && !isShooting)
-            {
-                idleTimer -= Time.deltaTime;
-                if(idleTimer <= 0)
-                {
-                    isIdle = false;
-                    isRotating = true;
-                    targetRotation = (Rotation.eulerAngles.y + 180) % 360;
-                }
-            }
-
-            if(!isIdle && isRotating && !isShooting)
-            {
-                SetRotation(CalculateRotation());
-                if(IsRotationComplete())
-                {
-                    isIdle = true;
-                    isRotating = false;
-                    ResetTimer();
-                }
-            }
-
-            if(!isIdle && !isRotating && isShooting)
-            {
-                Quaternion desiredRotation = CalculateRotationTowardsPlayer();
-                SetRotation(RotateTowards(desiredRotation));
-                
-                if(IsFacingPlayer(desiredRotation))
-                {
-                    shootTimer -= Time.deltaTime;
-                    if (shootTimer <= 0)
-                    {
-                        shootTimer = enemyScriptableObject.RateOfFire;
-                        Shoot();
-                    }
-                }
-
-            }
+            stateMachine.Update();
 
         }
 
@@ -110,5 +63,12 @@ namespace StatePattern.Enemy
             isRotating = false;
             isShooting = false;
         }
+       
+    }
+    public enum OnePunchManStates
+    {
+        IDLE,
+        ROTATING,
+        SHOOTING
     }
 }
